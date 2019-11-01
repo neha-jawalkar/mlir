@@ -635,6 +635,10 @@ void SimpleAffineExprFlattener::visitAddExpr(AffineBinaryOpExpr expr) {
       {
         auto mulOp = AddRhs.cast<AffineBinaryOpExpr>();
         auto mulLhs = mulOp.getLHS();
+        auto mulRhs = mulOp.getRHS().cast<AffineConstantExpr>().getValue();
+        mulRhs = mulRhs > 0 ? mulRhs : -mulRhs;
+        if((mulRhs != 0) && ((mulRhs & (mulRhs - 1)) == 0))
+        {
         if(mulLhs.getKind() == AffineExprKind::FloorDiv)
         {
           auto floorDivOp = mulLhs.cast<AffineBinaryOpExpr>();
@@ -655,6 +659,8 @@ void SimpleAffineExprFlattener::visitAddExpr(AffineBinaryOpExpr expr) {
             }
           }
         }
+        }
+
       }
   const auto &rhs = operandExprStack.back();
   auto &lhs = operandExprStack[operandExprStack.size() - 2];
