@@ -630,6 +630,32 @@ void SimpleAffineExprFlattener::visitMulExpr(AffineBinaryOpExpr expr) {
 
 void SimpleAffineExprFlattener::visitAddExpr(AffineBinaryOpExpr expr) {
   assert(operandExprStack.size() >= 2);
+    auto AddRhs = expr.getRHS();
+      if(AddRhs.getKind() == AffineExprKind::Mul)
+      {
+        auto mulOp = AddRhs.cast<AffineBinaryOpExpr>();
+        auto mulLhs = mulOp.getLHS();
+        if(mulLhs.getKind() == AffineExprKind::FloorDiv)
+        {
+          auto floorDivOp = mulLhs.cast<AffineBinaryOpExpr>();
+          if(floorDivOp.getRHS().cast<AffineConstantExpr>().getValue() == -mulOp.getRHS().cast<AffineConstantExpr>().getValue())
+          {
+            auto dividend = floorDivOp.getLHS();
+            auto everythingElse = expr.getLHS();
+            auto diffAsExpr = simplifyAffineExpr(everythingElse - dividend, numDims, numSymbols);
+            if(diffAsExpr.getKind() == AffineExprKind::Constant)
+            {
+              operandExprStack.pop_back();
+              SimpleAffineExprFlattener::addLocalFloorDivId(NULL, 1, dividend % floorDivOp.getRHS());
+              auto &addLhs = operandExprStack.back();
+              std::fill(addLhs.begin(), addLhs.end(), 0);
+              addLhs[getLocalVarStartIndex() + numLocals - 1] = 1;
+              addLhs[getConstantIndex()] = diffAsExpr.cast<AffineConstantExpr>().getValue();
+              return;
+            }
+          }
+        }
+      }
   const auto &rhs = operandExprStack.back();
   auto &lhs = operandExprStack[operandExprStack.size() - 2];
   assert(lhs.size() == rhs.size());
