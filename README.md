@@ -1,3 +1,6 @@
+# Q2a
+1. The original test case file was not triggering the simplifyAffineExpr function, so I made changes to it (and have included it in the mlir/ folder). It is called affine-floordiv-simplify.mlir.
+
 # Multi-Level Intermediate Representation Overview
 
 The MLIR project aims to define a common intermediate representation (IR) that
