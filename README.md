@@ -1,6 +1,6 @@
 # Q2a
-1. The original test case file was not triggering the simplifyAffineExpr function, so I made changes to it (and have included it in the mlir/ folder). It is called affine-floordiv-simplify.mlir.
-2. My code doesn't pass mlir-check. It fails the memref-dependence-check, which triggers the custom floordiv transformation (it transforms something of the form (expr - (expr floordiv divisor)\*divisor) to (expr mod divisor)). I think this is why the test case fails (though I'm not sure).
+1. The original test case file was not triggering the simplifyAffineExpr function, so I made changes to it. It is in the mlir/ folder and is called affine-floordiv-simplify.mlir.
+2. My code doesn't pass mlir-check. It fails memref-dependence-check, which triggers the custom floordiv transformation (it transforms something of the form (expr - (expr floordiv divisor)\*divisor) to (expr mod divisor)). I think this is why the test fails (though I'm not sure).
 
 # Multi-Level Intermediate Representation Overview
 
